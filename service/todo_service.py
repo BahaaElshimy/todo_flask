@@ -6,13 +6,25 @@ class Todo_Service:
         self.todo_repo = Todo_Repository()
 
     def save(self, todo:Todo) -> Todo:
-        return self.todo_repo.save_todo(todo)
+        try:
+            return self.todo_repo.save_todo(todo)
+        except:
+            return {"message":"can't save todo {}".format(todo)}
 
     def list_todos(self):
-        return self.todo_repo.list_todos()
+        try:
+            return self.todo_repo.list_todos()
+        except:
+          return {"message":"Exception occured "}
 
     def update_todo(self,todo:Todo) -> Todo:
-        return self.todo_repo.update_todo( todo)
+        item  = Todo.query.filter_by(id=todo.id).first()
+        if item:
+            item.title = todo.title
+            item.done = todo.done
+            return self.todo_repo.save_todo(item)
+
+        return {"message":"Item doesn't exist"}
 
     def delete_todo(self, id):
         return self.todo_repo.delete_todo(id)
